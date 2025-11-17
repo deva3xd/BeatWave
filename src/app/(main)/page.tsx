@@ -2,7 +2,7 @@
 
 import React, { useEffect, useReducer, useRef } from "react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/app-sidebar";
+import { AppSidebar } from "@/components/AppSidebar";
 import { song as Song } from "@/generated/prisma";
 import SongList from "@/components/SongList";
 import Player from "@/components/Player";
@@ -141,10 +141,13 @@ const Home = () => {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <main className="w-screen bg-background">
-        <SidebarTrigger className="text-white bg-black fixed top-0" />
+      <main className="w-screen mx-auto bg-background">
         <div className="max-w-screen-lg mx-auto">
-          <div className="mx-2 text-white py-2 w-full overflow-y-auto bg-foreground min-h-screen">
+          <div className="flex items-center gap-2">
+            <SidebarTrigger className="text-white bg-black" />
+            <span className="font-semibold text-sm text-white">All Music</span>
+          </div>
+          <div className="text-white bg-foreground">
             <SongList
               songs={state.songs}
               songState={{
@@ -156,9 +159,8 @@ const Home = () => {
             />
           </div>
           <div
-            className={`mx-2 text-white fixed bottom-0 w-screen bg-background max-w-screen-lg py-2 ${
-              state.selectSong ? "grid grid-cols-3" : "hidden"
-            }`}
+            className={`fixed bottom-0 right-0 text-white bg-background p-2 w-full z-50 ${state.selectSong ? "grid grid-cols-3" : "hidden"
+              }`}
           >
             <Player
               selectSong={state.selectSong}

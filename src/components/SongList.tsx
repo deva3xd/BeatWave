@@ -1,9 +1,9 @@
-import Image from "next/image";
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, { useState } from "react";
 import { Pause, Play, EllipsisVertical } from "lucide-react";
 import { song } from "@/generated/prisma";
-import Ph from "@/images/placeholder.png";
 import { Checkbox } from "@/components/ui/checkbox"
+import Image from "next/image";
+import Ph from "@/images/placeholder.png";
 
 type headerProps = {
   songs: song[];
@@ -19,7 +19,7 @@ const SongList = ({ songs, songState, isPlaying, handleClick }: headerProps) => 
   const [openMenu, setOpenMenu] = useState(false);
 
   return (
-    <div className="grid grid-cols-6">
+    <div className="grid grid-cols-6 max-w-screen-lg overflow-y-auto h-[37rem] p-2 gap-2">
       {songs && songs.length > 0 ? (
         songs.map((song) => {
           return (
