@@ -1,8 +1,7 @@
 import Image from "next/image";
 import React, { Dispatch, SetStateAction, useState } from "react";
-import { Pause, Play } from "lucide-react";
+import { Pause, Play, EllipsisVertical } from "lucide-react";
 import { song } from "@/generated/prisma";
-import { EllipsisVertical } from "lucide-react";
 import Ph from "@/images/placeholder.png";
 import { Checkbox } from "@/components/ui/checkbox"
 
@@ -11,7 +10,7 @@ type headerProps = {
   isPlaying: boolean;
   songState: {
     value: song | null;
-    set: Dispatch<SetStateAction<song | null>>;
+    set: (song: song) => void;
   },
   handleClick: (song: song) => void;
 }
@@ -42,9 +41,14 @@ const SongList = ({ songs, songState, isPlaying, handleClick }: headerProps) => 
 
                 {/* dropdown menu */}
                 {openMenu && (
-                  <div className="absolute top-8 right-1 bg-background text-white shadow-lg rounded-sm rounded-tr-none py-2 px-3 text-sm z-10 flex items-center gap-1">
-                    <Checkbox />
-                    Playlist 1
+                  <div className="absolute top-8 right-1 bg-background text-white shadow-lg rounded-sm rounded-tr-none py-2 px-3 text-sm z-10">
+                    <div className="flex items-center gap-1">
+                      <Checkbox />
+                      Playlist 1
+                    </div>
+                    <div className="flex items-center gap-1 mt-2">
+                      New Playlist
+                    </div>
                   </div>
                 )}
               </div>

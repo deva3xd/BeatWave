@@ -9,29 +9,65 @@ import {
 } from "@/components/ui/card";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { useState } from "react";
+import { useReducer } from "react";
 import { useRouter } from "next/navigation";
 import { generateReactHelpers } from "@uploadthing/react";
 import type { OurFileRouter } from "@/app/api/uploadthing/core";
 
 const { useUploadThing } = generateReactHelpers<OurFileRouter>();
 
+type StateSong = {
+  title: string;
+  artist: string;
+  thumbnail: File | null;
+  audio: File | null;
+  loading: boolean;
+};
+
+type ActionSong = 
+ | {type: 'TITLE'; payload: string}
+ | {type: 'ARTIST'; payload: string}
+ | {type: 'THUMBNAIL', payload: File | null}
+ | {type: 'AUDIO', payload: File | null}
+ | {type: 'LOADING'; payload: boolean}
+
+const reducer = (state: StateSong, action: ActionSong) => {
+  switch (action.type) {
+    case 'TITLE':
+      return { ...state, title: action.payload };
+    case 'ARTIST':
+      return { ...state, artist: action.payload };
+    case 'THUMBNAIL':
+      return { ...state, thumbnail: action.payload };
+    case 'AUDIO':
+      return { ...state, audio: action.payload };
+    case 'LOADING':
+      return { ...state, loading: !state.loading };
+    default:
+      throw new Error('unexpected action');
+  }
+}
+
+const initialState = {
+  title: '',
+  artist: '',
+  thumbnail: null,
+  audio: null,
+  loading: false
+}
+
 const Song = () => {
-  const [title, setTitle] = useState("");
-  const [artist, setArtist] = useState("");
-  const [thumbnail, setThumbnail] = useState<File | null>(null);
-  const [audio, setAudio] = useState<File | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [state, dispatch] = useReducer(reducer, initialState);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+    dispatch({ type: 'LOADING', payload: true });
 
-    if (!audio) return;
+    if (!state.audio) return;
 
     // upload file to uploadthing
-    const uploaded = await startUpload([audio]);
+    const uploaded = await startUpload([state.audio]);
     const audioUrl = uploaded?.[0]?.ufsUrl;
 
     if (!audioUrl) return;
@@ -40,12 +76,12 @@ const Song = () => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        title,
-        artist,
+        title: state.title,
+        artist: state.artist,
         audio: audioUrl,
       }),
     });
-    setLoading(false);
+    dispatch({ type: 'LOADING', payload: true });
     router.push("/");
   };
 
@@ -76,9 +112,9 @@ const Song = () => {
                 id="title"
                 name="title"
                 placeholder="title"
-                value={title}
+                value={state.title}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setTitle(e.target.value)
+                  dispatch({ type: 'TITLE', payload: e.target.value })
                 }
                 required
               />
@@ -93,9 +129,9 @@ const Song = () => {
                 id="artist"
                 name="artist"
                 placeholder="artist"
-                value={artist}
+                value={state.artist}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setArtist(e.target.value)
+                  dispatch({ type: 'ARTIST', payload: e.target.value })
                 }
                 required
               />
@@ -112,7 +148,7 @@ const Song = () => {
                 accept=".jpg,.jpeg"
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   if (e.target.files?.[0]) {
-                    setThumbnail(e.target.files[0]);
+                    dispatch({ type: 'THUMBNAIL', payload: e.target.files[0] });
                   }
                 }}
               />
@@ -129,7 +165,7 @@ const Song = () => {
                 accept=".mp3,audio/mpeg"
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   if (e.target.files?.[0]) {
-                    setAudio(e.target.files[0]);
+                    dispatch({ type: 'AUDIO', payload: e.target.files[0] });
                   }
                 }}
                 required
@@ -140,9 +176,9 @@ const Song = () => {
             <button
               type="submit"
               className="bg-black w-full rounded-sm cursor-pointer px-3 py-2 hover:opacity-85 disabled:cursor-default disabled:opacity-50"
-              disabled={loading}
+              disabled={state.loading}
             >
-              {loading ? "Saving..." : "Submit"}
+              {state.loading ? "Saving..." : "Submit"}
             </button>
           </CardFooter>
         </form>
