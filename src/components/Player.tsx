@@ -1,11 +1,12 @@
-import Image from "next/image";
 import { Pause, Play, SkipBack, SkipForward, VolumeX, Volume, Volume1, Volume2 } from "lucide-react";
 import { formatTime } from "@/utils/formatTime";
+import { song as Song } from "@/generated/prisma";
+import { Slider } from "@/components/ui/slider";
+import Image from "next/image";
 import Ph from "@/images/placeholder.png";
-import { song } from "@/generated/prisma";
 
 type headerProps = {
-  selectSong: song | null;
+  selectSong: Song | null;
   handleAudio: () => void;
   isPlaying: boolean;
   duration: number;
@@ -44,13 +45,13 @@ const Player = ({ selectSong, handleAudio, isPlaying, duration, currentTime, han
         </div>
         <div className="flex flex-row items-center gap-3">
           <span className="text-xs">{formatTime(currentTime)}</span>
-          <input type="range" className="w-full accent-white" min={0} max={duration} value={currentTime} onChange={(e) => handleSeek(Number(e.target.value))} />
+          <Slider className="w-full" max={duration} value={[currentTime]} onValueChange={(v) => handleSeek(v[0])} />
           <span className="text-xs">{formatTime(duration)}</span>
         </div>
       </div>
       <div className="flex flex-row items-center justify-end px-5 gap-3">
         { volumeIcon() }
-        <input type="range" className="w-1/3 accent-white" min={0} max={1} step={0.01} onChange={(e) => handleVolume(Number(e.target.value))} />
+        <Slider className="w-1/3" max={1} value={[volume]} step={0.01} onValueChange={(v) => handleVolume(Number(v))} />
       </div>
     </>
   )
