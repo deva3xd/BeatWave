@@ -6,36 +6,36 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
-model song {
+model Song {
   id        Int @id @default(autoincrement()) 
   title     String
   artist    String
   thumbnail String?                                 
   audio     String
-  playlist  playlist_song[]
+  playlist  PlaylistSong[]
 }
 
-model playlist {
+model Playlist {
   id        Int @id @default(autoincrement()) 
   name      String
   thumbnail String?
-  songs     playlist_song[]                                 
+  songs     PlaylistSong[]                                 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 }
 
-model playlist_song {
+model PlaylistSong {
   id          Int @id @default(autoincrement()) 
-  song        song  @relation(fields: [song_id], references: [id])
+  song        Song  @relation(fields: [song_id], references: [id])
   song_id     Int
-  playlist    playlist  @relation(fields: [playlist_id], references: [id])
+  playlist    Playlist  @relation(fields: [playlist_id], references: [id])
   playlist_id Int
 }
