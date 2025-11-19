@@ -1,25 +1,25 @@
 import React, { useState } from "react";
 import { Pause, Play, EllipsisVertical } from "lucide-react";
-import { song } from "@/generated/prisma";
+import { Song } from "@prisma/client";
 import { Checkbox } from "@/components/ui/checkbox"
 import Image from "next/image";
 import Ph from "@/images/placeholder.png";
 
 type headerProps = {
-  songs: song[];
+  songs: Song[];
   isPlaying: boolean;
   songState: {
-    value: song | null;
-    set: (song: song) => void;
+    value: Song | null;
+    set: (song: Song) => void;
   },
-  handleClick: (song: song) => void;
+  handleClick: (song: Song) => void;
 }
 
-const SongList = ({ songs, songState, isPlaying, handleClick }: headerProps) => {
+const SongLibrary = ({ songs, songState, isPlaying, handleClick }: headerProps) => {
   const [openMenu, setOpenMenu] = useState(false);
 
   return (
-    <div className="grid grid-cols-6 max-w-screen-lg overflow-y-auto h-[37rem] p-2 gap-2">
+    <div className="grid grid-cols-6 max-w-screen-lg overflow-y-auto py-2 gap-2">
       {songs && songs.length > 0 ? (
         songs.map((song) => {
           return (
@@ -28,7 +28,6 @@ const SongList = ({ songs, songState, isPlaying, handleClick }: headerProps) => 
                 <Image
                   src={Ph}
                   alt="thumbnail"
-                  className="rounded-t-xs"
                   priority
                   fill
                 />
@@ -45,9 +44,6 @@ const SongList = ({ songs, songState, isPlaying, handleClick }: headerProps) => 
                     <div className="flex items-center gap-1">
                       <Checkbox />
                       Playlist 1
-                    </div>
-                    <div className="flex items-center gap-1 mt-2">
-                      New Playlist
                     </div>
                   </div>
                 )}
@@ -81,10 +77,10 @@ const SongList = ({ songs, songState, isPlaying, handleClick }: headerProps) => 
           )
         })
       ) : (
-        <span className="flex justify-center">No Song Available</span>
+        <span className="text-base p-2">No Song Available</span>
       )}
     </div>
   )
 }
 
-export default SongList;
+export default SongLibrary;

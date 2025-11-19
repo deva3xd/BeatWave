@@ -3,8 +3,8 @@
 import React, { useEffect, useReducer, useRef } from "react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
-import { song as Song } from "@/generated/prisma";
-import SongList from "@/components/SongList";
+import { Song } from "@prisma/client";
+import SongLibrary from "@/components/SongLibrary";
 import Player from "@/components/Player";
 
 type StateSong = {
@@ -59,7 +59,7 @@ const Home = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch("/api");
+        const res = await fetch("/api/songs");
         const data = await res.json();
         dispatch({ type: "SONGS", payload: data.songs });
       } catch (err) {
@@ -144,11 +144,11 @@ const Home = () => {
       <main className="w-screen mx-auto bg-background">
         <div className="max-w-screen-lg mx-auto">
           <div className="flex items-center gap-2">
-            <SidebarTrigger className="text-white bg-black" />
-            <span className="font-semibold text-sm text-white">All Music</span>
+            <SidebarTrigger className="text-white bg-black hover:text-white/50 hover:bg-transparent cursor-pointer" />
+            <span className="font-semibold text-sm text-white">All Songs</span>
           </div>
           <div className="text-white bg-foreground">
-            <SongList
+            <SongLibrary
               songs={state.songs}
               songState={{
                 value: state.selectSong,
@@ -159,7 +159,7 @@ const Home = () => {
             />
           </div>
           <div
-            className={`fixed bottom-0 right-0 text-white bg-background p-2 w-full z-50 ${state.selectSong ? "grid grid-cols-3" : "hidden"
+            className={`fixed bottom-0 right-0 text-white bg-background p-4 w-full z-50 ${state.selectSong ? "grid grid-cols-3" : "hidden"
               }`}
           >
             <Player

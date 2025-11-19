@@ -1,6 +1,6 @@
 import { Pause, Play, SkipBack, SkipForward, VolumeX, Volume, Volume1, Volume2 } from "lucide-react";
 import { formatTime } from "@/utils/formatTime";
-import { song as Song } from "@/generated/prisma";
+import { Song } from "@prisma/client";
 import { Slider } from "@/components/ui/slider";
 import Image from "next/image";
 import Ph from "@/images/placeholder.png";
@@ -29,7 +29,7 @@ const Player = ({ selectSong, handleAudio, isPlaying, duration, currentTime, han
   return (
     <>
       <div className="flex flex-row items-center gap-3">
-        <Image src={Ph} alt="thumbnail" className="rounded-xs h-16 w-16" priority />
+        <Image src={Ph} alt="thumbnail" className="h-16 w-16" priority />
         <div className="flex flex-col">
           <span className="font-normal text-sm">{selectSong.title}</span>
           <span className="font-light text-sm">{selectSong.artist}</span>
