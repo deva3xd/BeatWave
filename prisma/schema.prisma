@@ -15,27 +15,28 @@ datasource db {
 }
 
 model Song {
-  id        Int @id @default(autoincrement()) 
+  id        Int            @id @default(autoincrement())
   title     String
   artist    String
-  thumbnail String?                                 
-  audio     String
+  thumbnail String?
+  audioUrl  String
+  audioKey  String
   playlist  PlaylistSong[]
 }
 
 model Playlist {
-  id        Int @id @default(autoincrement()) 
+  id        Int            @id @default(autoincrement())
   name      String
   thumbnail String?
-  songs     PlaylistSong[]                                 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  songs     PlaylistSong[]
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
 }
 
 model PlaylistSong {
-  id          Int @id @default(autoincrement()) 
-  song        Song  @relation(fields: [song_id], references: [id])
+  id          Int      @id @default(autoincrement())
+  song        Song     @relation(fields: [song_id], references: [id])
   song_id     Int
-  playlist    Playlist  @relation(fields: [playlist_id], references: [id])
+  playlist    Playlist @relation(fields: [playlist_id], references: [id])
   playlist_id Int
 }

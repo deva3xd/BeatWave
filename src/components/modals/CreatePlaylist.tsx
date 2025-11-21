@@ -5,7 +5,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Plus, XIcon } from "lucide-react";
+import { DialogDescription } from "@radix-ui/react-dialog";
+import { Library, XIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useReducer } from "react";
 
@@ -62,14 +63,14 @@ const CreatePlaylist = () => {
 
     dispatch({ type: 'LOADING' });
     dispatch({ type: 'MODAL_OPEN', payload: false });
-    router.push("/");
+    router.refresh();
   };
 
   return (
     <Dialog open={state.modalOpen} onOpenChange={() => dispatch({ type: 'MODAL_OPEN', payload: true })}>
       <DialogTrigger className="cursor-pointer">
-        <div className="flex items-center gap-2">
-          <Plus size={20} />
+        <div className="flex items-center gap-2 hover:opacity-75">
+          <Library size={20} />
           <span className="text-sm">Create Playlist</span>
         </div>
       </DialogTrigger>
@@ -83,44 +84,46 @@ const CreatePlaylist = () => {
           </div>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
-          <label htmlFor="name">
-            <span className="text-xs text-white/50">Name</span>
-            <input
-              type="text"
-              className="bg-foreground w-full text-white border border-white/50 px-3 py-2 rounded-sm mb-2 focus:outline-0 focus:border-white"
-              id="name"
-              name="name"
-              placeholder="name"
-              value={state.name}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                dispatch({ type: 'NAME', payload: e.target.value })
-              }
-              required
-            />
-          </label>
-          <label htmlFor="thumbnail">
-            <span className="text-xs text-white/50">Thumbnail</span>
-            <input
-              type="file"
-              className="bg-foreground w-full text-white/50 border border-white/50 px-3 py-2 rounded-sm mb-2 focus:outline-0 focus:border-white"
-              id="thumbnail"
-              name="thumbnail"
-              accept=".jpg,.jpeg"
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                if (e.target.files?.[0]) {
-                  dispatch({ type: 'THUMBNAIL', payload: e.target.files[0] });
+          <DialogDescription>
+            <label htmlFor="name">
+              <span className="text-xs text-white/50">Name</span>
+              <input
+                type="text"
+                className="bg-foreground w-full text-white border border-white/50 px-3 py-2 rounded-sm mb-2 focus:outline-0 focus:border-white"
+                id="name"
+                name="name"
+                placeholder="name"
+                value={state.name}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  dispatch({ type: 'NAME', payload: e.target.value })
                 }
-              }}
-              disabled
-            />
-          </label>
-          <button
-            type="submit"
-            className="bg-white font-semibold text-black w-full rounded-sm cursor-pointer px-3 py-2 hover:opacity-85 disabled:cursor-default disabled:opacity-50 mt-2"
-            disabled={state.loading}
-          >
-            {state.loading ? "Saving..." : "Submit"}
-          </button>
+                required
+              />
+            </label>
+            <label htmlFor="thumbnail">
+              <span className="text-xs text-white/50">Thumbnail</span>
+              <input
+                type="file"
+                className="bg-foreground w-full text-white/50 border border-white/50 px-3 py-2 rounded-sm mb-2 focus:outline-0 focus:border-white"
+                id="thumbnail"
+                name="thumbnail"
+                accept=".jpg,.jpeg"
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  if (e.target.files?.[0]) {
+                    dispatch({ type: 'THUMBNAIL', payload: e.target.files[0] });
+                  }
+                }}
+                disabled
+              />
+            </label>
+            <button
+              type="submit"
+              className="bg-white font-semibold text-black w-full rounded-sm cursor-pointer px-3 py-2 hover:opacity-85 disabled:cursor-default disabled:opacity-50 mt-2"
+              disabled={state.loading}
+            >
+              {state.loading ? "Saving..." : "Submit"}
+            </button>
+          </DialogDescription>
         </form>
       </DialogContent>
     </Dialog>
