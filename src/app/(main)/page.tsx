@@ -8,7 +8,6 @@ import SongLibrary from "@/components/SongLibrary";
 import Player from "@/components/Player";
 
 type StateSong = {
-  songs: Song[];
   selectSong: Song | null;
   playing: boolean;
   volume: number;
@@ -17,7 +16,6 @@ type StateSong = {
 };
 
 type ActionSong =
-  | { type: "SONGS"; payload: Song[] }
   | { type: "SELECT_SONG"; payload: Song | null }
   | { type: "PLAYING" }
   | { type: "VOLUME"; payload: number }
@@ -26,8 +24,6 @@ type ActionSong =
 
 const reducer = (state: StateSong, action: ActionSong) => {
   switch (action.type) {
-    case "SONGS":
-      return { ...state, songs: action.payload };
     case "SELECT_SONG":
       return { ...state, selectSong: action.payload };
     case "PLAYING":
@@ -44,7 +40,6 @@ const reducer = (state: StateSong, action: ActionSong) => {
 };
 
 const initialState = {
-  songs: [],
   selectSong: null,
   playing: true,
   volume: 1,
@@ -55,19 +50,6 @@ const initialState = {
 const Home = () => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [state, dispatch] = useReducer(reducer, initialState);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetch("/api/songs");
-        const data = await res.json();
-        dispatch({ type: "SONGS", payload: data.songs });
-      } catch (err) {
-        console.log("error: " + err);
-      }
-    };
-    fetchData();
-  }, []);
 
   useEffect(() => {
     if (audioRef.current && state.selectSong) {
@@ -145,11 +127,10 @@ const Home = () => {
         <div className="max-w-screen-lg mx-auto">
           <div className="flex items-center gap-2">
             <SidebarTrigger className="text-white bg-black hover:text-white/50 hover:bg-transparent cursor-pointer" />
-            <span className="font-semibold text-sm text-white">All Songs</span>
+            <span className="font-semibold text-sm text-white">Song List</span>
           </div>
           <div className="text-white bg-foreground">
             <SongLibrary
-              songs={state.songs}
               songState={{
                 value: state.selectSong,
                 set: (song) => dispatch({ type: "SELECT_SONG", payload: song }),
@@ -175,7 +156,7 @@ const Home = () => {
           </div>
         </div>
       </main>
-      <audio ref={audioRef} src={state.selectSong?.audio} />
+      <audio ref={audioRef} src={state.selectSong?.audioUrl} />
     </SidebarProvider>
   );
 };
