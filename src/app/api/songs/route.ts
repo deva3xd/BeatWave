@@ -1,6 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
+import { UTApi } from "uploadthing/server";
 
+const utapi = new UTApi();
 const prisma = new PrismaClient();
 
 export const GET = async () => {
@@ -25,13 +27,15 @@ export const POST = async (req: NextRequest) => {
 };
 
 export const DELETE = async (req: NextRequest) => {
-  const { id } = await req.json();
+  const { id, key } = await req.json();
 
   const song = await prisma.song.delete({
     where: {
       id
     },
   });
+
+  await utapi.deleteFiles(key);
 
   return NextResponse.json({ song });
 };

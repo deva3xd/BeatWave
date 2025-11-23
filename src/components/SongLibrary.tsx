@@ -31,7 +31,7 @@ const SongLibrary = ({ songState, isPlaying, handleClick }: headerProps) => {
   };
 
   // delete
-  const handleDelete = async (e: React.FormEvent, id: number) => {
+  const handleDelete = async (e: React.FormEvent, id: number, key: string) => {
     e.preventDefault();
 
     await fetch("/api/songs", {
@@ -39,6 +39,7 @@ const SongLibrary = ({ songState, isPlaying, handleClick }: headerProps) => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         id,
+        key
       }),
     });
 
@@ -71,7 +72,7 @@ const SongLibrary = ({ songState, isPlaying, handleClick }: headerProps) => {
                 {/* dropdown menu */}
                 {openMenu === song.id && (
                   <div className="absolute top-8 right-1 bg-background text-white shadow-lg rounded-sm rounded-tr-none text-sm py-2 px-3  z-10">
-                    <button onClick={(e) => handleDelete(e, song.id)} className="flex items-center gap-1 hover:text-red-500 cursor-pointer">
+                    <button onClick={(e) => handleDelete(e, song.id, song.audioKey)} className="flex items-center gap-1 hover:text-red-500 cursor-pointer">
                       <Trash size={15} />
                       Delete
                     </button>
