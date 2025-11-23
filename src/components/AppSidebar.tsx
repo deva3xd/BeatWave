@@ -101,7 +101,7 @@ export function AppSidebar() {
                     <div className="flex flex-row gap-2 relative hover:bg-green-500/25 cursor-pointer">
                       <Image src={Ph} alt="thumbnail" className="h-12 w-12 rounded-xs" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" priority />
                       <div className="flex flex-col justify-center">
-                        <span className="font-semibold text-base text-green-500">{playlist.name}</span>
+                        <span className="font-semibold text-base text-white">{playlist.name}</span>
                         <span className="font-normal text-xs text-gray-200">Created in {new Date(playlist.createdAt).getFullYear()}</span>
                       </div>
                       <button

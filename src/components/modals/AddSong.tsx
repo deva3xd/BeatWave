@@ -40,7 +40,8 @@ type ActionSong =
   | { type: 'THUMBNAIL', payload: File | null }
   | { type: 'AUDIO', payload: File | null }
   | { type: 'LOADING' }
-  | { type: 'MODAL_OPEN', payload: boolean };
+  | { type: 'MODAL_OPEN', payload: boolean }
+  | { type: 'RESET' };
 
 const reducer = (state: StateSong, action: ActionSong) => {
   switch (action.type) {
@@ -56,6 +57,8 @@ const reducer = (state: StateSong, action: ActionSong) => {
       return { ...state, loading: !state.loading };
     case 'MODAL_OPEN':
       return { ...state, modalOpen: action.payload };
+    case 'RESET':
+      return initialState;
     default:
       throw new Error('unexpected action');
   }
@@ -88,6 +91,7 @@ const AddSong = () => {
 
     dispatch({ type: 'LOADING' });
     dispatch({ type: 'MODAL_OPEN', payload: false });
+    dispatch({ type: 'RESET' });
     router.refresh();
   };
 
