@@ -1,3 +1,4 @@
+import { Toaster } from "sonner";
 import "../globals.css";
 import type { Metadata } from "next";
 
@@ -11,5 +12,10 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <main>{children}</main>;
+  return (
+    <>
+      <main>{children}</main>
+      <Toaster />
+    </>
+  )
 }

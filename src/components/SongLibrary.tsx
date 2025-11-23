@@ -5,6 +5,7 @@ import { mutate } from "swr";
 import Image from "next/image";
 import Ph from "@/images/placeholder.png";
 import useSWR from "swr";
+import { toast } from "sonner";
 
 type SongResponse = {
   songs: Song[]
@@ -24,6 +25,7 @@ const fetcher = (url: string) => fetch(url).then(res => res.json());
 const SongLibrary = ({ songState, isPlaying, handleClick }: headerProps) => {
   const { data } = useSWR<SongResponse>('/api/songs', fetcher);
   const [openMenu, setOpenMenu] = useState<number | null>(null);
+  const [deleting, setDeleting] = useState<boolean>(false);
 
   // toggle menu
   const handleToggleMenu = (songId: number) => {
@@ -34,16 +36,29 @@ const SongLibrary = ({ songState, isPlaying, handleClick }: headerProps) => {
   const handleDelete = async (e: React.FormEvent, id: number, key: string) => {
     e.preventDefault();
 
-    await fetch("/api/songs", {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        id,
-        key
-      }),
-    });
+    toast.promise(
+      (async () => {
+        setDeleting(true);
+        const res = await fetch("/api/songs", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id, key }),
+        });
 
-    mutate("/api/songs");
+        if (!res.ok) throw new Error("Failed");
+
+        const data = await res.json();
+        setDeleting(false);
+        mutate("/api/songs");
+
+        return `${data.song.name} deleted`;
+      })(),
+      {
+        loading: "Deleting...",
+        success: (msg) => msg,
+        error: "Error deleting song",
+      }
+    );
   };
 
   if (!data) return null;
@@ -72,9 +87,9 @@ const SongLibrary = ({ songState, isPlaying, handleClick }: headerProps) => {
                 {/* dropdown menu */}
                 {openMenu === song.id && (
                   <div className="absolute top-8 right-1 bg-background text-white shadow-lg rounded-sm rounded-tr-none text-sm py-2 px-3  z-10">
-                    <button onClick={(e) => handleDelete(e, song.id, song.audioKey)} className="flex items-center gap-1 hover:text-red-500 cursor-pointer">
+                    <button onClick={(e) => handleDelete(e, song.id, song.audioKey)} className={`flex items-center gap-1 ${deleting ? 'cursor-not-allowed opacity-25' : 'cursor-pointer hover:text-red-500 '}`} disabled={deleting}>
                       <Trash size={15} />
-                      Delete
+                      {deleting ? 'Loading' : 'Delete'}
                     </button>
                   </div>
                 )}

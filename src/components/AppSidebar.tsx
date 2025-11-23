@@ -18,6 +18,7 @@ import AddSong from "./modals/AddSong";
 import Ph from "@/images/placeholder.png";
 import useSWR from "swr";
 import { mutate } from "swr";
+import { toast } from "sonner";
 
 type PlaylistResponse = {
   playlists: Playlist[];
@@ -28,6 +29,7 @@ const fetcher = (url: string) => fetch(url).then(res => res.json());
 export function AppSidebar() {
   const { data } = useSWR<PlaylistResponse>('/api/playlists', fetcher);
   const [openMenu, setOpenMenu] = useState<number | null>(null);
+  const [deleting, setDeleting] = useState<boolean>(false);
 
   const handleToggleMenu = (playlistId: number) => {
     setOpenMenu(prevId => (prevId === playlistId ? null : playlistId));
@@ -36,16 +38,30 @@ export function AppSidebar() {
   // delete
   const handleDelete = async (e: React.FormEvent, id: number) => {
     e.preventDefault();
+    
+    toast.promise(
+      (async () => {
+        setDeleting(true);
+        const res = await fetch("/api/playlists", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id }),
+        });
 
-    await fetch("/api/playlists", {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        id,
-      }),
-    });
+        if (!res.ok) throw new Error("Failed");
 
-    mutate("/api/playlists");
+        const data = await res.json();
+        setDeleting(false);
+        mutate("/api/playlists");
+        
+        return `${data.playlist.name} deleted`;
+      })(),
+      {
+        loading: "Deleting...",
+        success: (msg) => msg,
+        error: "Error deleting playlist",
+      }
+    );
   };
 
   if (!data) return null;
@@ -90,17 +106,17 @@ export function AppSidebar() {
                       </div>
                       <button
                         onClick={() => handleToggleMenu(playlist.id)}
-                        className={`absolute top-1 right-1 ${openMenu === playlist.id ? 'opacity-100 bg-black/50' : 'opacity-25 hover:opacity-100'} transition-opacity hover:bg-black/50 hover:cursor-pointer rounded-full p-1`}
+                        className={`absolute top-1 right-1 hover:bg-black/50 ${openMenu === playlist.id ? 'opacity-100 bg-black/50' : 'opacity-25 hover:opacity-100'} transition-opacity hover:cursor-pointer rounded-full p-1 disabled:opacity-25`}
                       >
                         <EllipsisVertical size={16} />
                       </button>
 
                       {/* dropdown menu */}
                       {openMenu === playlist.id && (
-                        <div className="absolute top-8 right-1 bg-background text-white shadow-lg rounded-sm rounded-tr-none text-sm py-2 px-3  z-10">
-                          <button onClick={(e) => handleDelete(e, playlist.id)} className="flex items-center gap-1 hover:text-red-500 cursor-pointer">
+                        <div className="absolute top-8 right-1 bg-background shadow-lg rounded-sm rounded-tr-none text-sm py-2 px-3  z-10">
+                          <button onClick={(e) => handleDelete(e, playlist.id)} className={`flex items-center gap-1 text-white ${deleting ? 'cursor-not-allowed opacity-25' : 'cursor-pointer hover:text-red-500 '}`} disabled={deleting}>
                             <Trash size={15} />
-                            Delete
+                            {deleting ? 'Loading' : 'Delete'}
                           </button>
                         </div>
                       )}
