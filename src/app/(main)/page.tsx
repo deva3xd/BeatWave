@@ -1,9 +1,8 @@
 "use client";
 
 import React, { useEffect, useReducer, useRef } from "react";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/AppSidebar";
 import { Song } from "@prisma/client";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 import SongLibrary from "@/components/SongLibrary";
 import Player from "@/components/Player";
 
@@ -121,43 +120,40 @@ const Home = () => {
   };
 
   return (
-    <SidebarProvider>
-      <AppSidebar />
-      <main className="w-screen mx-auto bg-background">
-        <div className="max-w-screen-lg mx-auto">
-          <div className="flex items-center gap-2">
-            <SidebarTrigger className="text-white bg-black hover:text-white/50 hover:bg-transparent cursor-pointer" />
-            <span className="font-semibold text-sm text-white">Song List</span>
-          </div>
-          <div className="text-white bg-foreground">
-            <SongLibrary
-              songState={{
-                value: state.selectSong,
-                set: (song) => dispatch({ type: "SELECT_SONG", payload: song }),
-              }}
-              isPlaying={state.playing}
-              handleClick={handleClick}
-            />
-          </div>
-          <div
-            className={`fixed bottom-0 right-0 text-white bg-background p-4 w-full z-50 ${state.selectSong ? "grid grid-cols-3" : "hidden"
-              }`}
-          >
-            <Player
-              selectSong={state.selectSong}
-              handleAudio={handleAudio}
-              isPlaying={state.playing}
-              duration={state.duration}
-              currentTime={state.currentTime}
-              handleSeek={handleSeek}
-              handleVolume={handleVolume}
-              volume={state.volume}
-            />
-          </div>
+    <>
+      <div className="max-w-screen-lg mx-auto">
+        <div className="flex items-center gap-2">
+          <SidebarTrigger className="text-white bg-black hover:text-white/50 hover:bg-transparent cursor-pointer" />
+          <span className="font-semibold text-sm text-white">Song List</span>
         </div>
-      </main>
+        <div className="text-white bg-foreground">
+          <SongLibrary
+            songState={{
+              value: state.selectSong,
+              set: (song) => dispatch({ type: "SELECT_SONG", payload: song }),
+            }}
+            isPlaying={state.playing}
+            handleClick={handleClick}
+          />
+        </div>
+        <div
+          className={`fixed bottom-0 right-0 text-white bg-background p-4 w-full z-50 ${state.selectSong ? "grid grid-cols-3" : "hidden"
+            }`}
+        >
+          <Player
+            selectSong={state.selectSong}
+            handleAudio={handleAudio}
+            isPlaying={state.playing}
+            duration={state.duration}
+            currentTime={state.currentTime}
+            handleSeek={handleSeek}
+            handleVolume={handleVolume}
+            volume={state.volume}
+          />
+        </div>
+      </div>
       <audio ref={audioRef} src={state.selectSong?.audioUrl} />
-    </SidebarProvider>
+    </>
   );
 };
 
