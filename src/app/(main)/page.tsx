@@ -1,70 +1,33 @@
 "use client";
 
-import React, { useEffect, useReducer, useRef } from "react";
-import { Song } from "@prisma/client";
+import React, { useEffect, useRef } from "react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { Song } from "@prisma/client";
 import SongLibrary from "@/components/SongLibrary";
 import Player from "@/components/Player";
-
-type StateSong = {
-  selectSong: Song | null;
-  playing: boolean;
-  volume: number;
-  currentTime: number;
-  duration: number;
-};
-
-type ActionSong =
-  | { type: "SELECT_SONG"; payload: Song | null }
-  | { type: "PLAYING" }
-  | { type: "VOLUME"; payload: number }
-  | { type: "CURRENT_TIME"; payload: number }
-  | { type: "DURATION"; payload: number };
-
-const reducer = (state: StateSong, action: ActionSong) => {
-  switch (action.type) {
-    case "SELECT_SONG":
-      return { ...state, selectSong: action.payload };
-    case "PLAYING":
-      return { ...state, playing: !state.playing };
-    case "VOLUME":
-      return { ...state, volume: action.payload };
-    case "CURRENT_TIME":
-      return { ...state, currentTime: action.payload };
-    case "DURATION":
-      return { ...state, duration: action.payload };
-    default:
-      throw new Error("unexpected action");
-  }
-};
-
-const initialState = {
-  selectSong: null,
-  playing: true,
-  volume: 1,
-  currentTime: 0,
-  duration: 0,
-};
+import useSong from "@/stores/useSong";
+import useAudio from "@/stores/useAudio";
 
 const Home = () => {
+  const { selectSong, playing, setSelectSong, togglePlaying } = useSong();
+  const { volume, duration, currentTime, setVolume, setDuration, setCurrentTime } = useAudio();
   const audioRef = useRef<HTMLAudioElement>(null);
-  const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
-    if (audioRef.current && state.selectSong) {
+    if (audioRef.current && selectSong) {
       audioRef.current.play();
-      dispatch({ type: "PLAYING" });
+      togglePlaying();
     }
-  }, [state.selectSong]);
+  }, [selectSong]);
 
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
     const updateTime = () =>
-      dispatch({ type: "CURRENT_TIME", payload: audio.currentTime });
+      setCurrentTime(audio.currentTime);
     const setAudioData = () =>
-      dispatch({ type: "DURATION", payload: audio.duration });
+      setDuration(audio.duration);
 
     audio.addEventListener("timeupdate", updateTime);
     audio.addEventListener("loadedmetadata", setAudioData);
@@ -73,13 +36,13 @@ const Home = () => {
       audio.removeEventListener("timeupdate", updateTime);
       audio.removeEventListener("loadedmetadata", setAudioData);
     };
-  }, [state.selectSong]);
+  }, [selectSong]);
 
   // progress bar
   const handleSeek = (value: number) => {
     if (audioRef.current) {
       audioRef.current.currentTime = value;
-      dispatch({ type: "CURRENT_TIME", payload: value });
+      setCurrentTime(value);
     }
   };
 
@@ -87,12 +50,12 @@ const Home = () => {
   const handleAudio = () => {
     if (!audioRef.current) return;
 
-    if (state.playing) {
+    if (playing) {
       audioRef.current.pause();
-      dispatch({ type: "PLAYING" });
+      togglePlaying();
     } else {
       audioRef.current.play();
-      dispatch({ type: "PLAYING" });
+      togglePlaying;
     }
   };
 
@@ -100,11 +63,11 @@ const Home = () => {
   const handleClick = (song: Song) => {
     if (!audioRef.current) return;
 
-    if (state.selectSong?.id === song.id) {
+    if (selectSong?.id === song.id) {
       handleAudio();
     } else {
-      dispatch({ type: "SELECT_SONG", payload: song });
-      dispatch({ type: "PLAYING" });
+      setSelectSong(song);
+      togglePlaying;
       setTimeout(() => {
         audioRef.current?.play();
       }, 0);
@@ -116,7 +79,7 @@ const Home = () => {
     if (audioRef.current) {
       audioRef.current.volume = value;
     }
-    dispatch({ type: "VOLUME", payload: value });
+    setVolume(value);
   };
 
   return (
@@ -129,30 +92,29 @@ const Home = () => {
         <div className="text-white bg-foreground">
           <SongLibrary
             songState={{
-              value: state.selectSong,
-              set: (song) => dispatch({ type: "SELECT_SONG", payload: song }),
+              value: selectSong,
+              set: (song) => setSelectSong(song),
             }}
-            isPlaying={state.playing}
+            isPlaying={playing}
             handleClick={handleClick}
           />
         </div>
         <div
-          className={`fixed bottom-0 right-0 text-white bg-background p-4 w-full z-50 ${state.selectSong ? "grid grid-cols-3" : "hidden"
-            }`}
+          className={`fixed bottom-0 right-0 text-white bg-background p-4 w-full z-50 ${selectSong ? "grid grid-cols-3" : "hidden"}`}
         >
           <Player
-            selectSong={state.selectSong}
+            selectSong={selectSong}
             handleAudio={handleAudio}
-            isPlaying={state.playing}
-            duration={state.duration}
-            currentTime={state.currentTime}
+            isPlaying={playing}
+            duration={duration}
+            currentTime={currentTime}
             handleSeek={handleSeek}
             handleVolume={handleVolume}
-            volume={state.volume}
+            volume={volume}
           />
         </div>
       </div>
-      <audio ref={audioRef} src={state.selectSong?.audioUrl} />
+      <audio ref={audioRef} src={selectSong?.audioUrl} />
     </>
   );
 };

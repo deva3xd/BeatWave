@@ -45,7 +45,7 @@ const Player = ({ selectSong, handleAudio, isPlaying, duration, currentTime, han
         </div>
         <div className="flex flex-row items-center gap-3">
           <span className="text-xs">{formatTime(currentTime)}</span>
-          <Slider className="w-full" max={duration} value={[currentTime]} onValueChange={(v) => handleSeek(v[0])} />
+          <Slider className="w-full cursor-pointer" max={duration} value={[currentTime]} onValueChange={(v) => handleSeek(v[0])} />
           <span className="text-xs">{formatTime(duration)}</span>
         </div>
       </div>
