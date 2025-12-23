@@ -1,0 +1,87 @@
+import useSWR from "swr";
+import { mutate } from "swr";
+import { useState } from "react";
+import { toast } from "sonner";
+import { Plus, Trash } from "lucide-react";
+import { Playlist } from "@prisma/client";
+import { SidebarMenuItem } from "@/components/ui/sidebar";
+import Image from "next/image";
+import Link from "next/link";
+import Ph from "@/images/placeholder.png";
+
+type PlaylistResponse = {
+  playlists: Playlist[];
+};
+
+const fetcher = (url: string) => fetch(url).then(res => res.json());
+
+const PlaylistLibrary = () => {
+  const { data } = useSWR<PlaylistResponse>('/api/playlists', fetcher);
+  const [deleting, setDeleting] = useState<boolean>(false);
+
+  // delete
+  const handleDelete = async (e: React.FormEvent, id: number) => {
+    e.preventDefault();
+
+    toast.promise(
+      (async () => {
+        setDeleting(true);
+        const res = await fetch("/api/playlists", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id }),
+        });
+
+        if (!res.ok) throw new Error("Failed");
+
+        const data = await res.json();
+        setDeleting(false);
+        mutate("/api/playlists");
+
+        return `Playlist ${data.playlist.name} deleted`;
+      })(),
+      {
+        loading: "Deleting...",
+        success: (msg) => msg,
+        error: "Error deleting playlist",
+      }
+    );
+  };
+
+  if (!data) return null;
+
+  return (
+    <>
+      <span className="text-sm font-light text-gray-200">
+        Playlists
+      </span>
+      {data.playlists.length > 0 ? (
+        data.playlists.map((playlist) => (
+          <SidebarMenuItem className="ms-4 mb-1" key={playlist.id}>
+            <div className="flex gap-2 relative hover:bg-green-500/25">
+              <Image src={Ph} alt="thumbnail" className="h-12 w-12 rounded-xs" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" priority />
+              <div className="flex justify-between w-full pe-1">
+                <Link href={`/${playlist.id}`} className="flex flex-col justify-center">
+                  <span className="font-semibold text-base text-white">{playlist.name}</span>
+                  <span className="font-normal text-xs text-gray-200">Created in {new Date(playlist.createdAt).getFullYear()}</span>
+                </Link>
+                <div className="flex items-center gap-1">
+                  <button onClick={() => console.log('test')} className="border border-white p-1 rounded-full text-white hover:text-blue-600 hover:border-blue-500 cursor-pointer">
+                    <Plus size={12} />
+                  </button>
+                  <button onClick={(e) => handleDelete(e, playlist.id)} className="border border-white p-1 rounded-full text-white hover:text-red-600 hover:border-red-500 cursor-pointer" disabled={deleting}>
+                    <Trash size={12} />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </SidebarMenuItem>
+        ))
+      ) : (
+        <span className="text-sm ms-4">No Playlist Available</span>
+      )}
+    </>
+  )
+}
+
+export default PlaylistLibrary;
