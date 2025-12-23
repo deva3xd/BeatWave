@@ -55,7 +55,7 @@ const Home = () => {
       togglePlaying();
     } else {
       audioRef.current.play();
-      togglePlaying;
+      togglePlaying();
     }
   };
 
