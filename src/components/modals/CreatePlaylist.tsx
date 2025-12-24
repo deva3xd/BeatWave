@@ -9,6 +9,7 @@ import { DialogDescription } from "@radix-ui/react-dialog";
 import { Library, XIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useReducer } from "react";
+import { Button } from "../ui/button";
 
 const initialState = {
   name: '',
@@ -82,9 +83,9 @@ const CreatePlaylist = () => {
         <DialogHeader className="text-white">
           <div className="flex items-center justify-between">
             <DialogTitle>Create Playlist</DialogTitle>
-            <button onClick={() => dispatch({ type: 'MODAL_OPEN', payload: false })} className="text-white p-1 bg-red-600 hover:opacity-85 rounded-full cursor-pointer">
+            <Button variant="danger" size="icon" onClick={() => dispatch({ type: 'MODAL_OPEN', payload: false })}>
               <XIcon size={14} />
-            </button>
+            </Button>
           </div>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
@@ -120,13 +121,12 @@ const CreatePlaylist = () => {
                 disabled
               />
             </label>
-            <button
-              type="submit"
-              className="bg-white font-semibold text-black w-full rounded-sm cursor-pointer px-3 py-2 hover:opacity-85 disabled:cursor-default disabled:opacity-50 mt-2"
+            <Button
+              className="w-full mt-2"
               disabled={state.loading}
             >
               {state.loading ? "Saving..." : "Submit"}
-            </button>
+            </Button>
           </DialogDescription>
         </form>
       </DialogContent>
