@@ -19,7 +19,7 @@ export function AppSidebar() {
   return (
     <Sidebar className="border-none">
       <SidebarContent className="bg-foreground text-white px-1">
-        <SidebarGroup>
+        <SidebarGroup className="p-1">
           <SidebarGroupLabel className="text-white font-semibold text-md border-b border-white rounded-none text-2xl flex flex-row justify-center uppercase">
             BeatWave
           </SidebarGroupLabel>

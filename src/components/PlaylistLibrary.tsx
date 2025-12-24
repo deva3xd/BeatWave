@@ -1,3 +1,15 @@
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 import useSWR from "swr";
 import { mutate } from "swr";
 import { useState } from "react";
@@ -38,7 +50,7 @@ const PlaylistLibrary = () => {
         setDeleting(false);
         mutate("/api/playlists");
 
-        return `Playlist ${data.playlist.name} deleted`;
+        return `Playlist deleted`;
       })(),
       {
         loading: "Deleting...",
@@ -65,13 +77,29 @@ const PlaylistLibrary = () => {
                   <span className="font-semibold text-base text-white">{playlist.name}</span>
                   <span className="font-normal text-xs text-gray-200">Created in {new Date(playlist.createdAt).getFullYear()}</span>
                 </Link>
-                <div className="flex items-center gap-1">
-                  <button onClick={() => console.log('test')} className="border border-white p-1 rounded-full text-white hover:text-blue-600 hover:border-blue-500 cursor-pointer">
-                    <Plus size={12} />
-                  </button>
-                  <button onClick={(e) => handleDelete(e, playlist.id)} className="border border-white p-1 rounded-full text-white hover:text-red-600 hover:border-red-500 cursor-pointer" disabled={deleting}>
-                    <Trash size={12} />
-                  </button>
+                <div className="flex items-center">
+                  <Button variant="none" size="icon" onClick={() => console.log('test')} className="text-white cursor-pointer">
+                    <Plus />
+                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="none" size="icon" className="text-white cursor-pointer hover:text-red-600">
+                        <Trash />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle className="text-white">Are you sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This action cannot be undone. This will permanently delete playlist and remove data from servers.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel className="border-none cursor-pointer text-white bg-primary hover:bg-primary/90 hover:text-white">Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={(e) => handleDelete(e, playlist.id)} className="cursor-pointer text-white bg-red-600 hover:bg-red-700 hover:text-white" disabled={deleting}>Continue</AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
               </div>
             </div>
