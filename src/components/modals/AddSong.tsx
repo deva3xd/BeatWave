@@ -113,7 +113,7 @@ const AddSong = () => {
           <span className="text-sm">Add Song</span>
         </div>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="rounded-lg">
         <DialogHeader className="text-white">
           <div className="flex items-center justify-between">
             <DialogTitle>Add Song</DialogTitle>

@@ -7,10 +7,6 @@ import Ph from "@/images/placeholder.png";
 import useSWR from "swr";
 import { toast } from "sonner";
 
-type SongResponse = {
-  songs: Song[]
-};
-
 type headerProps = {
   isPlaying: boolean;
   songState: {
@@ -23,7 +19,9 @@ type headerProps = {
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
 const SongLibrary = ({ songState, isPlaying, handleClick }: headerProps) => {
-  const { data } = useSWR<SongResponse>('/api/songs', fetcher);
+  const { data } = useSWR<{ songs: Song[] }>('/api/songs', fetcher);
+  const songs = data?.songs ?? [];
+
   const [openMenu, setOpenMenu] = useState<number | null>(null);
   const [deleting, setDeleting] = useState<boolean>(false);
 
@@ -61,12 +59,10 @@ const SongLibrary = ({ songState, isPlaying, handleClick }: headerProps) => {
     );
   };
 
-  if (!data) return null;
-
   return (
     <div className="grid grid-cols-6 max-w-screen-lg overflow-y-auto py-2 gap-2">
-      {data?.songs.length > 0 ? (
-        data.songs.map((song) => {
+      {songs.length > 0 ? (
+        songs.map((song) => {
           return (
             <div key={song.id} className="flex flex-col items-center mb-2">
               <div className="relative group h-36 w-36">

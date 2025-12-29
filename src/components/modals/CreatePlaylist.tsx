@@ -79,7 +79,7 @@ const CreatePlaylist = () => {
           <span className="text-sm">Create Playlist</span>
         </div>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="rounded-lg">
         <DialogHeader className="text-white">
           <div className="flex items-center justify-between">
             <DialogTitle>Create Playlist</DialogTitle>

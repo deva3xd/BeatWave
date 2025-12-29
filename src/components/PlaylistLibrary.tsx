@@ -14,21 +14,20 @@ import useSWR from "swr";
 import { mutate } from "swr";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Plus, Trash } from "lucide-react";
+import { Trash } from "lucide-react";
 import { Playlist } from "@prisma/client";
 import { SidebarMenuItem } from "@/components/ui/sidebar";
 import Image from "next/image";
 import Link from "next/link";
 import Ph from "@/images/placeholder.png";
-
-type PlaylistResponse = {
-  playlists: Playlist[];
-};
+import AddPlaylistSong from "./modals/AddPlaylistSong";
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
 const PlaylistLibrary = () => {
-  const { data } = useSWR<PlaylistResponse>('/api/playlists', fetcher);
+  const { data } = useSWR<{ playlists: Playlist[] }>('/api/playlists', fetcher);
+  const playlists = data?.playlists ?? [];
+
   const [deleting, setDeleting] = useState<boolean>(false);
 
   // delete
@@ -60,17 +59,15 @@ const PlaylistLibrary = () => {
     );
   };
 
-  if (!data) return null;
-
   return (
     <>
       <span className="text-sm font-light text-gray-200">
         Playlists
       </span>
-      {data.playlists.length > 0 ? (
-        data.playlists.map((playlist) => (
+      {playlists.length > 0 ? (
+        playlists.map((playlist) => (
           <SidebarMenuItem className="ms-4 mb-1" key={playlist.id}>
-            <div className="flex gap-2 relative hover:bg-green-500/25">
+            <div className="flex gap-2 relative hover:bg-gray-600/15">
               <Image src={Ph} alt="thumbnail" className="h-12 w-12 rounded-xs" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" priority />
               <div className="flex justify-between w-full pe-1">
                 <Link href={`/${playlist.id}`} className="flex flex-col justify-center">
@@ -78,9 +75,8 @@ const PlaylistLibrary = () => {
                   <span className="font-normal text-xs text-gray-200">Created in {new Date(playlist.createdAt).getFullYear()}</span>
                 </Link>
                 <div className="flex items-center">
-                  <Button variant="none" size="icon" onClick={() => console.log('test')} className="text-white cursor-pointer">
-                    <Plus />
-                  </Button>
+                  <AddPlaylistSong playlist={playlist} />
+                  {/* delete playlist */}
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
                       <Button variant="none" size="icon" className="text-white cursor-pointer hover:text-red-600">
