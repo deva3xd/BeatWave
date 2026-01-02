@@ -31,7 +31,7 @@ CREATE TABLE "public"."PlaylistSong" (
 );
 
 -- AddForeignKey
-ALTER TABLE "public"."PlaylistSong" ADD CONSTRAINT "PlaylistSong_song_id_fkey" FOREIGN KEY ("song_id") REFERENCES "public"."Song"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "public"."PlaylistSong" ADD CONSTRAINT "PlaylistSong_song_id_fkey" FOREIGN KEY ("song_id") REFERENCES "public"."Song"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "public"."PlaylistSong" ADD CONSTRAINT "PlaylistSong_playlist_id_fkey" FOREIGN KEY ("playlist_id") REFERENCES "public"."Playlist"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
