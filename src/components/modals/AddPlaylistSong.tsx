@@ -78,7 +78,7 @@ const AddPlaylistSong = ({ playlist }: headerProps) => {
 
   return (
     <Dialog open={state.modalOpen} onOpenChange={() => dispatch({ type: 'MODAL_OPEN', payload: true })}>
-      <DialogTrigger className="cursor-pointer size-6 text-sm hover:text-green-500">
+      <DialogTrigger className="cursor-pointer size-6 text-sm hover:text-green-500" title="Add Song">
         <Plus size={20} />
       </DialogTrigger>
       <DialogContent className="rounded-lg">
@@ -92,12 +92,12 @@ const AddPlaylistSong = ({ playlist }: headerProps) => {
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           {songs.map((song) => (
-            <div key={song.id} className="flex items-center gap-3 text-white">
+            <div key={song.id} className="flex items-center gap-3 text-white mb-2">
               <Checkbox id={`${song.id}`} onCheckedChange={() => dispatch({ type: 'TOGGLE_SONG', payload: song.id })} />
               <Label htmlFor={`${song.id}`}>{song.title}</Label>
             </div>
           ))}
-          <Button className="w-full mt-4">Submit</Button>
+          <Button className="w-full mt-2">Submit</Button>
         </form>
       </DialogContent>
     </Dialog>

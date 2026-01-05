@@ -6,7 +6,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { DialogDescription } from "@radix-ui/react-dialog";
-import { Library, XIcon } from "lucide-react";
+import { CirclePlus, XIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useReducer } from "react";
 import { Button } from "../ui/button";
@@ -73,11 +73,8 @@ const CreatePlaylist = () => {
 
   return (
     <Dialog open={state.modalOpen} onOpenChange={() => dispatch({ type: 'MODAL_OPEN', payload: true })}>
-      <DialogTrigger className="cursor-pointer">
-        <div className="flex items-center gap-2 hover:opacity-75">
-          <Library size={20} />
-          <span className="text-sm">Create Playlist</span>
-        </div>
+      <DialogTrigger className="cursor-pointer hover:opacity-75" title="Create a playlist">
+        <CirclePlus size={16} />
       </DialogTrigger>
       <DialogContent className="rounded-lg">
         <DialogHeader className="text-white">
