@@ -17,7 +17,7 @@ type headerProps = {
 }
 
 const Player = ({ selectSong, handleAudio, isPlaying, duration, currentTime, handleSeek, handleVolume, volume }: headerProps) => {
-  if (!selectSong) return null;
+  if (!selectSong) return;
 
   const volumeIcon = () => {
     if (volume === 0) return <VolumeX />;
@@ -51,7 +51,7 @@ const Player = ({ selectSong, handleAudio, isPlaying, duration, currentTime, han
       </div>
       <div className="flex flex-row items-center justify-end px-5 gap-3">
         { volumeIcon() }
-        <Slider className="w-1/3" max={1} value={[volume]} step={0.01} onValueChange={(v) => handleVolume(Number(v))} />
+        <Slider className="w-1/3 cursor-pointer" max={1} value={[volume]} step={0.01} onValueChange={(v) => handleVolume(Number(v))} />
       </div>
     </>
   )

@@ -4,7 +4,6 @@ import { Song } from "@prisma/client";
 import { mutate } from "swr";
 import Image from "next/image";
 import Ph from "@/images/placeholder.png";
-import useSWR from "swr";
 import { toast } from "sonner";
 
 type headerProps = {
@@ -12,16 +11,12 @@ type headerProps = {
   songState: {
     value: Song | null;
     set: (song: Song) => void;
-  },
+  };
   handleClick: (song: Song) => void;
+  data: Song[];
 }
 
-const fetcher = (url: string) => fetch(url).then(res => res.json());
-
-const SongLibrary = ({ songState, isPlaying, handleClick }: headerProps) => {
-  const { data } = useSWR<{ songs: Song[] }>('/api/songs', fetcher);
-  const songs = data?.songs ?? [];
-
+const SongLibrary = ({ songState, isPlaying, handleClick, data }: headerProps) => {
   const [openMenu, setOpenMenu] = useState<number | null>(null);
   const [deleting, setDeleting] = useState<boolean>(false);
 
@@ -45,11 +40,10 @@ const SongLibrary = ({ songState, isPlaying, handleClick }: headerProps) => {
 
         if (!res.ok) throw new Error("Failed");
 
-        const data = await res.json();
         setDeleting(false);
         mutate("/api/songs");
 
-        return `${data.song.name} deleted`;
+        return "Song deleted";
       })(),
       {
         loading: "Deleting...",
@@ -60,11 +54,11 @@ const SongLibrary = ({ songState, isPlaying, handleClick }: headerProps) => {
   };
 
   return (
-    <div className="grid grid-cols-6 max-w-screen-lg overflow-y-auto py-2 gap-2">
-      {songs.length > 0 ? (
-        songs.map((song) => {
+    <div className="grid grid-cols-6 max-w-screen-lg overflow-y-auto p-2 gap-2">
+      {data.length > 0 ? (
+        data.map((s) => {
           return (
-            <div key={song.id} className="flex flex-col items-center mb-2">
+            <div key={s.id} className="flex flex-col items-center mb-2">
               <div className="relative group h-36 w-36">
                 <Image
                   src={Ph}
@@ -74,16 +68,16 @@ const SongLibrary = ({ songState, isPlaying, handleClick }: headerProps) => {
                   fill
                 />
                 <button
-                  onClick={() => handleToggleMenu(song.id)}
-                  className={`absolute top-1 right-1 ${openMenu === song.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'} transition-opacity bg-black/50 hover:cursor-pointer rounded-full p-1`}
+                  onClick={() => handleToggleMenu(s.id)}
+                  className={`absolute top-1 right-1 ${openMenu === s.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'} transition-opacity bg-black/50 hover:cursor-pointer rounded-full p-1`}
                 >
                   <EllipsisVertical className="text-white" size={16} />
                 </button>
 
                 {/* dropdown menu */}
-                {openMenu === song.id && (
+                {openMenu === s.id && (
                   <div className="absolute top-8 right-1 bg-background text-white shadow-lg rounded-sm rounded-tr-none text-sm py-2 px-3  z-10">
-                    <button onClick={(e) => handleDelete(e, song.id, song.audioKey)} className={`flex items-center gap-1 ${deleting ? 'cursor-not-allowed opacity-25' : 'cursor-pointer hover:text-red-500 '}`} disabled={deleting}>
+                    <button onClick={(e) => handleDelete(e, s.id, s.audioKey)} className={`flex items-center gap-1 ${deleting ? 'cursor-not-allowed opacity-25' : 'cursor-pointer hover:text-red-500 '}`} disabled={deleting}>
                       <Trash size={15} />
                       {deleting ? 'Loading' : 'Delete'}
                     </button>
@@ -96,19 +90,19 @@ const SongLibrary = ({ songState, isPlaying, handleClick }: headerProps) => {
                 <div className="flex flex-col w-[70%]">
                   <span
                     className="font-normal text-sm line-clamp-1"
-                    title={song.title}
+                    title={s.title}
                   >
-                    {song.title}
+                    {s.title}
                   </span>
                   <span className="font-light text-xs line-clamp-1">
-                    {song.artist}
+                    {s.artist}
                   </span>
                 </div>
                 <button
-                  onClick={() => handleClick(song)}
+                  onClick={() => handleClick(s)}
                   className="bg-green-500 rounded-full p-1 cursor-pointer text-black hover:bg-green-500/75"
                 >
-                  {songState.value?.id === song.id && isPlaying ? (
+                  {songState.value?.id === s.id && isPlaying ? (
                     <Pause size={14} fill="true" />
                   ) : (
                     <Play size={14} fill="true" />

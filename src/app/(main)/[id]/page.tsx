@@ -2,36 +2,50 @@
 
 import useSWR from "swr";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Song } from "@prisma/client";
 import SongLibrary from "@/components/SongLibrary";
 import Player from "@/components/Player";
+import { useParams } from "next/navigation";
+import { useRef } from "react";
+import { Prisma } from '@prisma/client';
+import useSong from "@/stores/useSong";
+import useAudio from "@/stores/useAudio";
 import { useAudioPlayer } from "@/hooks/use-audio-player";
+import { Song } from "@prisma/client";
+
+type PlaylistSongResponse = Prisma.PlaylistSongGetPayload<{
+  include: {
+    playlist: true;
+    song: true;
+  }
+}>
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
-const Home = () => {
-    const {
-      toggleVolume,
-      selected,
-      audio,
-      seek,
-      audioRef,
-      volume,
-      duration,
-      currentTime,
-      selectSong,
-      playing
-    } = useAudioPlayer<Song>();
-  const { data } = useSWR<{ songs: Song[] }>('/api/songs', fetcher);
-  
-  if (!data) return;
+export default function PlaylistPage() {
+  const {
+    toggleVolume,
+    selected,
+    audio,
+    seek,
+    audioRef,
+    volume,
+    duration,
+    currentTime,
+    selectSong,
+    playing
+  } = useAudioPlayer<Song>();
+  const params = useParams<{ id: string }>()
+  const id = Number(params.id); // change type data id
+  const { data } = useSWR<{ playlistSong: PlaylistSongResponse[] }>(`/api/playlist-song/${id}`, fetcher);
+  const title = data?.playlistSong.at(0); // extract playlist name
+  const songs = data?.playlistSong.map(ps => ps.song) ?? []; // make song array
 
   return (
     <>
       <div className="max-w-screen-lg mx-auto">
         <div className="flex items-center gap-2">
           <SidebarTrigger className="text-white bg-black hover:text-white/50 hover:bg-transparent cursor-pointer" />
-          <span className="font-semibold text-sm text-white">Song List</span>
+          <span className="font-semibold text-sm text-white">{title?.playlist.name}</span>
         </div>
         <div className="text-white bg-foreground">
           <SongLibrary
@@ -41,7 +55,7 @@ const Home = () => {
             }}
             isPlaying={playing}
             handleClick={selected}
-            data={data.songs}
+            data={songs}
           />
         </div>
         <div
@@ -61,7 +75,5 @@ const Home = () => {
       </div>
       <audio ref={audioRef} src={selectSong?.audioUrl} />
     </>
-  );
-};
-
-export default Home;
+  )
+}
