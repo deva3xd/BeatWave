@@ -1,8 +1,9 @@
 import "../globals.css";
 import type { Metadata } from "next";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Toaster } from "sonner";
+import ClientProviders from "@/components/ClientProviders";
 
 export const metadata: Metadata = {
   title: "Beatwave",
@@ -19,9 +20,11 @@ export default function RootLayout({
       <body>
         <SidebarProvider>
           <AppSidebar />
-          <main className="w-screen mx-auto bg-background">
-            {children}
-          </main>
+          <SidebarInset>
+            <ClientProviders>
+              {children}
+            </ClientProviders>
+          </SidebarInset>
           <Toaster />
         </SidebarProvider>
       </body>
