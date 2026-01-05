@@ -12,6 +12,7 @@ import { generateReactHelpers } from "@uploadthing/react";
 import type { OurFileRouter } from "@/app/api/uploadthing/core";
 import { DialogDescription } from "@radix-ui/react-dialog";
 import { Button } from "../ui/button";
+import { SidebarMenuButton } from "../ui/sidebar";
 
 const { useUploadThing } = generateReactHelpers<OurFileRouter>();
 
@@ -107,12 +108,12 @@ const AddSong = () => {
 
   return (
     <Dialog open={state.modalOpen} onOpenChange={() => dispatch({ type: 'MODAL_OPEN', payload: true })}>
-      <DialogTrigger className="cursor-pointer">
-        <div className="flex items-center gap-2 hover:opacity-75">
-          <Music size={20} />
+      <SidebarMenuButton title="Add Song" asChild>
+        <DialogTrigger className="cursor-pointer flex items-center gap-2 w-full">
+          <Music size={16} />
           <span className="text-sm">Add Song</span>
-        </div>
-      </DialogTrigger>
+        </DialogTrigger>
+      </SidebarMenuButton>
       <DialogContent className="rounded-lg">
         <DialogHeader className="text-white">
           <div className="flex items-center justify-between">
