@@ -5,10 +5,7 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import SongLibrary from "@/components/SongLibrary";
 import Player from "@/components/Player";
 import { useParams } from "next/navigation";
-import { useRef } from "react";
 import { Prisma } from '@prisma/client';
-import useSong from "@/stores/useSong";
-import useAudio from "@/stores/useAudio";
 import { useAudioPlayer } from "@/hooks/use-audio-player";
 import { Song } from "@prisma/client";
 

@@ -3,10 +3,11 @@ import { NextRequest, NextResponse } from "next/server";
 
 const prisma = new PrismaClient();
 
-export const GET = async (req: NextRequest, { params }: { params: { id: string } }) => {
+export const GET = async (req: NextRequest, { params }: { params: Promise<{ id: string }> } ) => {
+  const { id } = await params;
   const playlistSong = await prisma.playlistSong.findMany({
     where: {
-      playlist_id: Number(params.id),
+      playlist_id: Number(id),
     },
     include: {
       playlist: true,
