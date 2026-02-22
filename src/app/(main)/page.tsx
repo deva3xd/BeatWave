@@ -10,20 +10,20 @@ import { useAudioPlayer } from "@/hooks/use-audio-player";
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
 const Home = () => {
-    const {
-      toggleVolume,
-      selected,
-      audio,
-      seek,
-      audioRef,
-      volume,
-      duration,
-      currentTime,
-      selectSong,
-      playing
-    } = useAudioPlayer<Song>();
+  const {
+    toggleVolume,
+    selected,
+    audio,
+    seek,
+    audioRef,
+    volume,
+    duration,
+    currentTime,
+    selectSong,
+    playing
+  } = useAudioPlayer<Song>();
   const { data } = useSWR<{ songs: Song[] }>('/api/songs', fetcher);
-  
+
   if (!data) return;
 
   return (

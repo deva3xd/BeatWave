@@ -1,18 +1,10 @@
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Music, XIcon } from "lucide-react";
+"use client";
+
 import { useReducer } from "react";
 import { useRouter } from "next/navigation";
 import { generateReactHelpers } from "@uploadthing/react";
 import type { OurFileRouter } from "@/app/api/uploadthing/core";
-import { DialogDescription } from "@radix-ui/react-dialog";
-import { Button } from "../ui/button";
-import { SidebarMenuButton } from "../ui/sidebar";
+import { Button } from "@/components/ui/button";
 
 const { useUploadThing } = generateReactHelpers<OurFileRouter>();
 
@@ -23,7 +15,6 @@ const initialState = {
   audioUrl: null,
   audioKey: '',
   loading: false,
-  modalOpen: false
 };
 
 type StateSong = {
@@ -33,7 +24,6 @@ type StateSong = {
   audioUrl: File | null;
   audioKey: string;
   loading: boolean;
-  modalOpen: boolean;
 };
 
 type ActionSong =
@@ -42,7 +32,6 @@ type ActionSong =
   | { type: 'THUMBNAIL', payload: File | null }
   | { type: 'AUDIO', payload: File | null }
   | { type: 'LOADING' }
-  | { type: 'MODAL_OPEN', payload: boolean }
   | { type: 'RESET' };
 
 const reducer = (state: StateSong, action: ActionSong) => {
@@ -57,8 +46,6 @@ const reducer = (state: StateSong, action: ActionSong) => {
       return { ...state, audioUrl: action.payload };
     case 'LOADING':
       return { ...state, loading: !state.loading };
-    case 'MODAL_OPEN':
-      return { ...state, modalOpen: action.payload };
     case 'RESET':
       return initialState;
     default:
@@ -66,7 +53,7 @@ const reducer = (state: StateSong, action: ActionSong) => {
   }
 };
 
-const AddSong = () => {
+const page = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const router = useRouter();
 
@@ -75,6 +62,7 @@ const AddSong = () => {
     dispatch({ type: 'LOADING' });
 
     if (!state.audioUrl) return;
+    
     // upload file to uploadthing
     const uploaded = await startUpload([state.audioUrl]);
     const audioUrl = uploaded?.[0]?.ufsUrl;
@@ -92,7 +80,6 @@ const AddSong = () => {
     });
 
     dispatch({ type: 'LOADING' });
-    dispatch({ type: 'MODAL_OPEN', payload: false });
     dispatch({ type: 'RESET' });
     router.refresh();
   };
@@ -107,24 +94,15 @@ const AddSong = () => {
   });
 
   return (
-    <Dialog open={state.modalOpen} onOpenChange={() => dispatch({ type: 'MODAL_OPEN', payload: true })}>
-      <SidebarMenuButton title="Add Song" asChild>
-        <DialogTrigger className="cursor-pointer flex items-center gap-2 w-full">
-          <Music size={16} />
-          <span className="text-sm">Add Song</span>
-        </DialogTrigger>
-      </SidebarMenuButton>
-      <DialogContent className="rounded-lg">
-        <DialogHeader className="text-white">
+    <div className="text-white text-lg h-screen flex items-center justify-center">
+      <div className="w-1/2 bg-primary p-8 rounded-lg">
+        <div className="text-white">
           <div className="flex items-center justify-between">
-            <DialogTitle>Add Song</DialogTitle>
-            <Button variant="danger" size="icon" onClick={() => dispatch({ type: 'MODAL_OPEN', payload: false })}>
-              <XIcon size={14} />
-            </Button>
+            Add Song
           </div>
-        </DialogHeader>
+        </div>
         <form onSubmit={handleSubmit}>
-          <DialogDescription>
+          <div>
             <label htmlFor="title">
               <span className="text-xs text-white/50">Title</span>
               <input
@@ -193,11 +171,11 @@ const AddSong = () => {
             >
               {state.loading ? "Saving..." : "Submit"}
             </Button>
-          </DialogDescription>
+          </div>
         </form>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </div>
   )
 }
 
-export default AddSong;
+export default page

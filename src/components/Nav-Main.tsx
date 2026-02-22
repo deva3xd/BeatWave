@@ -7,8 +7,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { ListMusic } from "lucide-react";
-import AddSong from "./modals/AddSong";
+import { ListMusic, Music } from "lucide-react";
 import Link from "next/link";
 
 export function NavMain() {
@@ -24,13 +23,18 @@ export function NavMain() {
         <SidebarMenuItem>
           <SidebarMenuButton asChild title="Song List">
             <Link href="/" className="flex items-center gap-2 w-full">
-              <ListMusic size={20} />
+              <ListMusic />
               <span className="text-sm">Song List</span>
             </Link>
           </SidebarMenuButton>
         </SidebarMenuItem>
         <SidebarMenuItem>
-          <AddSong />
+          <SidebarMenuButton asChild title="Song List">
+            <Link href="/add-song" className="flex items-center gap-2 w-full">
+              <Music />
+              <span className="text-sm">Add Song</span>
+            </Link>
+          </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>
     </SidebarGroup>
