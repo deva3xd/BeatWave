@@ -1,4 +1,4 @@
-import "../globals.css";
+import "./globals.css";
 import type { Metadata } from "next";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
@@ -6,7 +6,10 @@ import { Toaster } from "sonner";
 import ClientProviders from "@/components/ClientProviders";
 
 export const metadata: Metadata = {
-  title: "Beatwave",
+  title: {
+    default: "Beatwave",
+    template: "%s - Beatwave"
+  },
   description: "Beatwave ",
 };
 
@@ -20,7 +23,7 @@ export default function RootLayout({
       <body>
         <SidebarProvider>
           <AppSidebar />
-          <SidebarInset>
+          <SidebarInset className="p-2">
             <ClientProviders>
               {children}
             </ClientProviders>
