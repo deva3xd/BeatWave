@@ -1,22 +1,29 @@
 "use client";
 
+import { useEffect } from "react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Song } from "@prisma/client";
 import { useAudioPlayer } from "@/hooks/use-audio-player";
 import useSWR from "swr";
 import SongLibrary from "@/components/SongLibrary";
-import Player from "@/components/Player";
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
 const MainClient = () => {
   const {
     selected,
-    audioRef,
+    setQueue,
     selectSong,
     playing
   } = useAudioPlayer<Song>();
   const { data } = useSWR<{ songs: Song[] }>('/api/songs', fetcher);
+
+  useEffect(() => {
+    if (data?.songs) {
+      // Refresh the shared queue when the user returns to the main song list from the sidebar.
+      setQueue(data.songs);
+    }
+  }, [data?.songs, setQueue]);
 
   if (!data) return;
 
@@ -37,14 +44,8 @@ const MainClient = () => {
           data={data.songs}
         />
       </div>
-      <div
-        className={`fixed bottom-0 right-0 text-white bg-background p-4 w-full z-50 ${selectSong ? "grid grid-cols-3" : "hidden"}`}
-      >
-        <Player />
-      </div>
-      <audio ref={audioRef} src={selectSong?.audioUrl} />
     </>
-  );
-};
+  )
+}
 
 export default MainClient;

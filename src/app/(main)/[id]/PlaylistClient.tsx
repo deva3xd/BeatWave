@@ -1,8 +1,8 @@
 "use client";
 
+import { useEffect, useMemo } from "react";
 import useSWR from "swr";
 import SongLibrary from "@/components/SongLibrary";
-import Player from "@/components/Player";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useParams } from "next/navigation";
 import { Prisma } from '@prisma/client';
@@ -20,14 +20,8 @@ const fetcher = (url: string) => fetch(url).then(res => res.json());
 
 export default function PlaylistClient() {
   const {
-    toggleVolume,
     selected,
-    audio,
-    seek,
-    audioRef,
-    volume,
-    duration,
-    currentTime,
+    setQueue,
     selectSong,
     playing
   } = useAudioPlayer<Song>();
@@ -35,7 +29,12 @@ export default function PlaylistClient() {
   const id = Number(params.id); // change type data id
   const { data } = useSWR<{ playlistSong: PlaylistSongResponse[] }>(`/api/playlist-song/${id}`, fetcher);
   const title = data?.playlistSong.at(0); // extract playlist name
-  const songs = data?.playlistSong.map(ps => ps.song) ?? []; // make song array
+  const songs = useMemo(() => data?.playlistSong.map(ps => ps.song) ?? [], [data?.playlistSong]); // make song array
+
+  useEffect(() => {
+    // keep prev/next aligned with the playlist currently being viewed.
+    setQueue(songs);
+  }, [songs, setQueue]);
 
   return (
     <>
@@ -54,12 +53,6 @@ export default function PlaylistClient() {
           data={songs}
         />
       </div>
-      <div
-        className={`fixed bottom-0 right-0 text-white bg-background p-4 w-full z-50 ${selectSong ? "grid grid-cols-3" : "hidden"}`}
-      >
-        <Player />
-      </div>
-      <audio ref={audioRef} src={selectSong?.audioUrl} />
     </>
   )
 }

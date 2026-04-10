@@ -13,6 +13,8 @@ const Player = () => {
     toggleVolume,
     audio,
     seek,
+    playPrev,
+    playNext,
     volume,
     duration,
     currentTime,
@@ -24,6 +26,7 @@ const Player = () => {
     if (volume === 0) return <VolumeX />;
     if (volume > 0 && volume <= 0.3) return <Volume />;
     if (volume > 0.3 && volume <= 0.7) return <Volume1 />;
+    
     return <Volume2 />;
   };
 
@@ -38,21 +41,26 @@ const Player = () => {
       </div>
       <div className="px-5 flex flex-col justify-center gap-2">
         <div className="flex flex-row justify-center gap-3">
-          <SkipBack fill="true" className="p-1 rounded-full" size={30} />
+          <button onClick={playPrev} className="cursor-pointer">
+            <SkipBack fill="true" className="p-1 rounded-full" size={30} />
+          </button>
           <button onClick={audio} className="cursor-pointer">
             {playing ? <Pause fill="true" className="bg-white p-1 rounded-full" size={30} /> : <Play fill="true" className="bg-white p-1 rounded-full" size={30} />}
           </button>
-          <SkipForward fill="true" className="p-1 rounded-full" size={30} />
+          <button onClick={playNext} className="cursor-pointer">
+            <SkipForward fill="true" className="p-1 rounded-full" size={30} />
+          </button>
         </div>
         <div className="flex flex-row items-center gap-3">
           <span className="text-xs">{formatTime(currentTime)}</span>
-          <Slider className="w-full cursor-pointer" max={duration} value={[currentTime]} onValueChange={(v) => seek(v[0])} />
+          {/* Guard against a zero-duration slider so seeking remains interactive once metadata loads. */}
+          <Slider className="w-full cursor-pointer" max={duration || 1} value={[currentTime]} onValueChange={(v) => seek(v[0])} />
           <span className="text-xs">{formatTime(duration)}</span>
         </div>
       </div>
       <div className="flex flex-row items-center justify-end px-5 gap-3">
         {volumeIcon()}
-        <Slider className="w-1/3 cursor-pointer" max={1} value={[volume]} step={0.01} onValueChange={(v) => toggleVolume(Number(v))} />
+        <Slider className="w-1/3 cursor-pointer" max={1} value={[volume]} step={0.01} onValueChange={(v) => toggleVolume(v[0] ?? 0)} />
       </div>
     </>
   )

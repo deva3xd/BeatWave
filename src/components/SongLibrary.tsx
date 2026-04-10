@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { Pause, Play, EllipsisVertical, Trash } from "lucide-react";
 import { Song } from "@prisma/client";
 import { mutate } from "swr";
+import { toast } from "sonner";
 import Image from "next/image";
 import Ph from "@/images/placeholder.png";
-import { toast } from "sonner";
 
 type headerProps = {
   isPlaying: boolean;
