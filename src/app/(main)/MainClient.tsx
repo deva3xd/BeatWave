@@ -11,14 +11,8 @@ const fetcher = (url: string) => fetch(url).then(res => res.json());
 
 const MainClient = () => {
   const {
-    toggleVolume,
     selected,
-    audio,
-    seek,
     audioRef,
-    volume,
-    duration,
-    currentTime,
     selectSong,
     playing
   } = useAudioPlayer<Song>();
@@ -46,16 +40,7 @@ const MainClient = () => {
       <div
         className={`fixed bottom-0 right-0 text-white bg-background p-4 w-full z-50 ${selectSong ? "grid grid-cols-3" : "hidden"}`}
       >
-        <Player
-          selectSong={selectSong}
-          handleAudio={audio}
-          isPlaying={playing}
-          duration={duration}
-          currentTime={currentTime}
-          handleSeek={seek}
-          handleVolume={toggleVolume}
-          volume={volume}
-        />
+        <Player />
       </div>
       <audio ref={audioRef} src={selectSong?.audioUrl} />
     </>

@@ -54,10 +54,10 @@ const SongLibrary = ({ songState, isPlaying, handleClick, data }: headerProps) =
   };
 
   return (
-    <div className="grid grid-cols-6 max-w-screen-lg overflow-y-auto p-2 gap-2">
+    <>
       {data.length > 0 ? (
-        data.map((s) => {
-          return (
+        <div className="grid grid-cols-6 overflow-y-auto py-4 gap-2">
+          {data.map((s) => (
             <div key={s.id} className="flex flex-col items-center mb-2">
               <div className="relative group h-36 w-36">
                 <Image
@@ -110,12 +110,12 @@ const SongLibrary = ({ songState, isPlaying, handleClick, data }: headerProps) =
                 </button>
               </div>
             </div>
-          )
-        })
+          ))}
+        </div>
       ) : (
-        <span className="text-base p-2">No Song Available</span>
+        <div className="text-base p-4">No Song Available</div>
       )}
-    </div>
+    </>
   )
 }
 

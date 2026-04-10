@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useRef } from "react";
 import { Song } from "@prisma/client";
 import useSong from "@/stores/useSong";

@@ -4,6 +4,7 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Toaster } from "sonner";
 import ClientProviders from "@/components/ClientProviders";
+import PlayerWrapper from "@/components/PlayerWrapper";
 
 export const metadata: Metadata = {
   title: {
@@ -28,6 +29,7 @@ export default function RootLayout({
               {children}
             </ClientProviders>
           </SidebarInset>
+          <PlayerWrapper />
           <Toaster />
         </SidebarProvider>
       </body>
