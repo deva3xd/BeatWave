@@ -24,7 +24,7 @@ export default function RootLayout({
       <body>
         <SidebarProvider>
           <AppSidebar />
-          <SidebarInset className="p-2">
+          <SidebarInset className="py-2 pr-2">
             <ClientProviders>
               {children}
             </ClientProviders>

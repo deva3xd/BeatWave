@@ -76,22 +76,22 @@ const CreatePlaylist = () => {
       <DialogTrigger className="cursor-pointer hover:opacity-75" title="Create a playlist">
         <CirclePlus size={16} />
       </DialogTrigger>
-      <DialogContent className="rounded-lg">
-        <DialogHeader className="text-white">
+      <DialogContent>
+        <DialogHeader>
           <div className="flex items-center justify-between">
             <DialogTitle>Create Playlist</DialogTitle>
-            <Button variant="danger" size="icon" onClick={() => dispatch({ type: 'MODAL_OPEN', payload: false })}>
+            <Button variant="danger" size="icon" className="border border-white/10 bg-white/6 hover:bg-red-500" onClick={() => dispatch({ type: 'MODAL_OPEN', payload: false })}>
               <XIcon size={14} />
             </Button>
           </div>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
-          <DialogDescription>
+          <DialogDescription className="space-y-4">
             <label htmlFor="name">
-              <span className="text-xs text-white/50">Name</span>
+              <span className="mb-1 block text-xs font-medium uppercase tracking-[0.18em] text-white/45 mt-2">Name</span>
               <input
                 type="text"
-                className="bg-foreground w-full text-white border border-white/50 px-3 py-2 rounded-sm mb-2 focus:outline-0 focus:border-white"
+                className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder:text-white/25 focus:outline-0 focus:ring-2 focus:ring-green-400/60"
                 id="name"
                 name="name"
                 placeholder="name"
@@ -103,10 +103,10 @@ const CreatePlaylist = () => {
               />
             </label>
             <label htmlFor="thumbnail">
-              <span className="text-xs text-white/50">Thumbnail</span>
+              <span className="mb-1 block text-xs font-medium uppercase tracking-[0.18em] text-white/45 mt-2">Thumbnail</span>
               <input
                 type="file"
-                className="bg-foreground w-full text-white/50 border border-white/50 px-3 py-2 rounded-sm mb-2 focus:outline-0 focus:border-white"
+                className="w-full rounded-xl border border-dashed border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white/35 file:mr-4 file:rounded-full file:border-0 file:bg-white/10 file:px-3 file:py-2 file:text-sm file:text-white/70"
                 id="thumbnail"
                 name="thumbnail"
                 accept=".jpg,.jpeg"
@@ -119,7 +119,7 @@ const CreatePlaylist = () => {
               />
             </label>
             <Button
-              className="w-full mt-2"
+              className="mt-2 h-11 w-full rounded-xl bg-green-400 font-semibold text-black hover:bg-green-300"
               disabled={state.loading}
             >
               {state.loading ? "Saving..." : "Submit"}

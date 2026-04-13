@@ -13,6 +13,7 @@ import { Song, Playlist } from "@prisma/client";
 import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
 import { Label } from "../ui/label";
+import { getSongs } from "@/lib/getSongs";
 
 const initialState = {
   songIds: [],
@@ -51,11 +52,9 @@ const reducer = (state: StateSong, action: ActionSong) => {
   }
 };
 
-const fetcher = (url: string) => fetch(url).then(res => res.json());
-
 const AddPlaylistSong = ({ playlist }: headerProps) => {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const { data } = useSWR<{ songs: Song[] }>('/api/songs', fetcher);
+  const { data } = useSWR<{ songs: Song[] }>("/api/songs", getSongs);
   const songs = data?.songs ?? [];
   const router = useRouter();
 
@@ -81,23 +80,23 @@ const AddPlaylistSong = ({ playlist }: headerProps) => {
       <DialogTrigger className="cursor-pointer size-6 text-sm hover:text-green-500" title="Add Song">
         <Plus size={20} />
       </DialogTrigger>
-      <DialogContent className="rounded-lg">
-        <DialogHeader className="text-white">
+      <DialogContent>
+        <DialogHeader>
           <div className="flex items-center justify-between">
             <DialogTitle>Add Song to Playlist</DialogTitle>
-            <Button variant="danger" size="icon" onClick={() => dispatch({ type: 'MODAL_OPEN', payload: false })}>
+            <Button variant="danger" size="icon" className="border border-white/10 bg-white/6 hover:bg-red-500" onClick={() => dispatch({ type: 'MODAL_OPEN', payload: false })}>
               <XIcon size={14} />
             </Button>
           </div>
         </DialogHeader>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="space-y-3">
           {songs.map((song) => (
-            <div key={song.id} className="flex items-center gap-3 text-white mb-2">
+            <div key={song.id} className="flex items-center gap-3 rounded-xl border border-white/8 bg-white/[0.03] px-3 py-2 text-white">
               <Checkbox id={`${song.id}`} onCheckedChange={() => dispatch({ type: 'TOGGLE_SONG', payload: song.id })} />
-              <Label htmlFor={`${song.id}`}>{song.title}</Label>
+              <Label htmlFor={`${song.id}`} className="cursor-pointer">{song.title}</Label>
             </div>
           ))}
-          <Button className="w-full mt-2">Submit</Button>
+          <Button className="mt-2 h-11 w-full rounded-xl bg-green-400 font-semibold text-black hover:bg-green-300">Submit</Button>
         </form>
       </DialogContent>
     </Dialog>

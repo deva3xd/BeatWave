@@ -1,10 +1,9 @@
 import React, { useState } from "react";
-import { Pause, Play, EllipsisVertical, Trash } from "lucide-react";
+import { Pause, Play, EllipsisVertical } from "lucide-react";
 import { Song } from "@prisma/client";
-import { mutate } from "swr";
-import { toast } from "sonner";
 import Image from "next/image";
 import Ph from "@/images/placeholder.png";
+import DeleteSong from "./modals/DeleteSong";
 
 type headerProps = {
   isPlaying: boolean;
@@ -18,91 +17,60 @@ type headerProps = {
 
 const SongLibrary = ({ songState, isPlaying, handleClick, data }: headerProps) => {
   const [openMenu, setOpenMenu] = useState<number | null>(null);
-  const [deleting, setDeleting] = useState<boolean>(false);
 
   // toggle menu
   const handleToggleMenu = (songId: number) => {
     setOpenMenu(prevId => (prevId === songId ? null : songId));
   };
 
-  // delete
-  const handleDelete = async (e: React.FormEvent, id: number, key: string) => {
-    e.preventDefault();
-
-    toast.promise(
-      (async () => {
-        setDeleting(true);
-        const res = await fetch("/api/songs", {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id, key }),
-        });
-
-        if (!res.ok) throw new Error("Failed");
-
-        setDeleting(false);
-        mutate("/api/songs");
-
-        return "Song deleted";
-      })(),
-      {
-        loading: "Deleting...",
-        success: (msg) => msg,
-        error: "Error deleting song",
-      }
-    );
-  };
-
   return (
     <>
       {data.length > 0 ? (
-        <div className="grid grid-cols-6 overflow-y-auto py-4 gap-2">
-          {data.map((s) => (
-            <div key={s.id} className="flex flex-col items-center mb-2">
-              <div className="relative group h-36 w-36">
+        <div className="grid grid-cols-2 gap-4 overflow-y-auto p-4 sm:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+          {data.map((song) => (
+            <div key={song.id} className="group rounded-[1.35rem] border border-white/8 bg-white/[0.04] p-3 transition-all hover:-translate-y-0.5 hover:border-white/14 hover:bg-white/[0.06]">
+              <div className="relative h-40 w-full overflow-hidden rounded-2xl">
                 <Image
                   src={Ph}
                   alt="thumbnail"
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   priority
                   fill
+                  className="object-cover transition duration-300 group-hover:scale-[1.03]"
                 />
                 <button
-                  onClick={() => handleToggleMenu(s.id)}
-                  className={`absolute top-1 right-1 ${openMenu === s.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'} transition-opacity bg-black/50 hover:cursor-pointer rounded-full p-1`}
+                  onClick={() => handleToggleMenu(song.id)}
+                  className={`absolute top-2 right-2 ${openMenu === song.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'} rounded-full border border-white/10 bg-black/45 p-1.5 transition-opacity hover:cursor-pointer`}
                 >
                   <EllipsisVertical className="text-white" size={16} />
                 </button>
 
                 {/* dropdown menu */}
-                {openMenu === s.id && (
-                  <div className="absolute top-8 right-1 bg-background text-white shadow-lg rounded-sm rounded-tr-none text-sm py-2 px-3  z-10">
-                    <button onClick={(e) => handleDelete(e, s.id, s.audioKey)} className={`flex items-center gap-1 ${deleting ? 'cursor-not-allowed opacity-25' : 'cursor-pointer hover:text-red-500 '}`} disabled={deleting}>
-                      <Trash size={15} />
-                      {deleting ? 'Loading' : 'Delete'}
-                    </button>
+                {openMenu === song.id && (
+                  <div className="absolute top-11 right-2 z-10 rounded-2xl border border-white/10 bg-neutral-950/96 px-3 py-2 text-sm text-white shadow-[0_18px_40px_rgba(0,0,0,0.45)] backdrop-blur-sm">
+                    <DeleteSong song={song} />
                   </div>
                 )}
               </div>
 
               {/* info + control */}
-              <div className="flex flex-row justify-between items-center w-36 mt-2">
-                <div className="flex flex-col w-[70%]">
+              <div className="mt-3 flex items-center justify-between gap-3">
+                <div className="min-w-0 flex-1">
                   <span
-                    className="font-normal text-sm line-clamp-1"
-                    title={s.title}
+                    className="block text-sm font-medium line-clamp-1"
+                    title={song.title}
                   >
-                    {s.title}
+                    {song.title}
                   </span>
-                  <span className="font-light text-xs line-clamp-1">
-                    {s.artist}
+                  <span className="block text-xs text-white/55 line-clamp-1">
+                    {song.artist}
                   </span>
                 </div>
                 <button
-                  onClick={() => handleClick(s)}
-                  className="bg-green-500 rounded-full p-1 cursor-pointer text-black hover:bg-green-500/75"
+                  onClick={() => handleClick(song)}
+                  className="flex size-9 shrink-0 items-center justify-center rounded-full bg-green-400 text-black shadow-[0_10px_20px_rgba(74,222,128,0.24)] cursor-pointer transition hover:bg-green-300"
                 >
-                  {songState.value?.id === s.id && isPlaying ? (
+                  {songState.value?.id === song.id && isPlaying ? (
                     <Pause size={14} fill="true" />
                   ) : (
                     <Play size={14} fill="true" />
@@ -113,7 +81,7 @@ const SongLibrary = ({ songState, isPlaying, handleClick, data }: headerProps) =
           ))}
         </div>
       ) : (
-        <div className="text-base p-4">No Song Available</div>
+        <div className="flex h-full items-center justify-center p-6 text-sm text-white/50">No Song Available</div>
       )}
     </>
   )

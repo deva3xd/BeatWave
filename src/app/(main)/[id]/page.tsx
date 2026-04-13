@@ -27,6 +27,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function Page({ params }: PageProps) {
-  await params;
-  return <PlaylistClient />;
+  const { id } = await params;
+  const playlist = await prisma.playlist.findUnique({
+    where: {
+      id: Number(id),
+    },
+    select: {
+      id: true,
+      name: true,
+    },
+  });
+
+  return <PlaylistClient playlistName={playlist?.name ?? "Playlist"} />;
 }

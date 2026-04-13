@@ -10,7 +10,7 @@ const PlayerWrapper = () => {
   return (
     <>
       <audio ref={setAudioRef} />
-      <div className={`fixed bottom-0 right-0 text-white bg-background p-4 w-full z-50 ${selectSong ? "grid grid-cols-3" : "hidden"}`}>
+      <div className={`fixed bottom-0 right-0 text-white bg-background p-4 w-full z-50 border-t border-white/8 ${selectSong ? "grid grid-cols-3" : "hidden"}`}>
         <Player />
       </div>
     </>
